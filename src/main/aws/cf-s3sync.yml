@@ -1,0 +1,66 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+  SourceS3BucketName:
+    Type: "String"
+    Default: "s3-sync-test-src"
+  SourceS3BucketPrefix:
+    Type: "String"
+    Default: ""
+  DestS3BucketName:
+    Type: "String"
+    Default: "s3-sync-test-dest"
+  LambdaRoleName:
+    Type: "String"
+    Default: "s3sync-lambda-executor"
+
+Resources:
+  LambdaRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: !Ref LambdaRoleName
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          Effect: "Allow"
+          Principal:
+            Service:
+              - "lambda.amazonaws.com"
+          Action:
+            - "sts:AssumeRole"
+
+  SourceS3BucketPolicy:
+    Type: "AWS::S3::BucketPolicy"
+    Properties:
+      Bucket: !Ref SourceS3BucketName
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              AWS: !GetAtt ["LambdaRole", "Arn"]
+            Action:
+              - "s3:GetObject"
+            Resource:
+              - !Sub "arn:aws:s3:::${SourceS3BucketName}"
+              - !Sub "arn:aws:s3:::${SourceS3BucketName}/*"
+
+  DestS3BucketPolicy:
+    Type: "AWS::S3::BucketPolicy"
+    Properties:
+      Bucket: !Ref DestS3BucketName
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              AWS: !GetAtt ["LambdaRole", "Arn"]
+            Action:
+              - "s3:PutObject"
+            Resource:
+              - !Sub "arn:aws:s3:::${DestS3BucketName}"
+              - !Sub "arn:aws:s3:::${DestS3BucketName}/*"
+
+
