@@ -1,0 +1,21 @@
+{
+  "QueueConfigurations": [
+    {
+      "Events": [
+        "s3:ObjectCreated:*"
+      ],
+      "QueueArn": "${sqs_queue_arn}",
+      "Filter": {
+        "Key": {
+          "FilterRules": [
+            {
+              "Name": "prefix",
+              "Value": "Inbox/"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
+
