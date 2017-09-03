@@ -1,10 +1,10 @@
 {
-  "QueueConfigurations": [
+  "LambdaFunctionConfigurations": [
     {
       "Events": [
         "s3:ObjectCreated:*"
       ],
-      "QueueArn": "${sqs_queue_arn}",
+      "LambdaFunctionArn": "arn:aws:lambda:ap-southeast-2:375921986069:function:s3sync-2",
       "Filter": {
         "Key": {
           "FilterRules": [

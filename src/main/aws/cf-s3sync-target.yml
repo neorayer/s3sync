@@ -1,0 +1,34 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+  TargetS3BucketName:
+    Type: "String"
+    Default: "s3-sync-test-target"
+  LambdaRoleArn:
+    Type: "String"
+    Default: "arn:aws:iam::375921986069:role/s3sync-lambda-executor"
+
+Resources:
+  TargetS3BucketPolicy:
+    Type: "AWS::S3::BucketPolicy"
+    Properties:
+      Bucket: !Ref TargetS3BucketName
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              AWS: !Ref LambdaRoleArn
+            Action: "s3:PutObject"
+            Resource: !Sub "arn:aws:s3:::${TargetS3BucketName}/*"
+
+Outputs:
+  TargetS3BucketName:
+    Description: "Arn of Target S3 bucket"
+    Value: !Ref TargetS3BucketName
+    Export:
+      Name: !Sub "${AWS::StackName}-TargetS3BucketName"
+
+
+
+
